@@ -22,11 +22,10 @@ router.get('/', function(req, res, next) {
   }
 
   /*
-   * return success and data with json format
-   * success : bool
-   * data : string
+   * return otpStr with string format
    */
-  res.write(otpStr);
+  res.render('index', { title: 'IoT TermProject', otp:otpStr});
+  res.send(otpStr);
 });
 
 module.exports = router;
