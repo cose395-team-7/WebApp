@@ -3,6 +3,9 @@
 var express = require('express');
 var router = express.Router();
 
+/*
+ * Random Number Generator Function in Integer format
+ */
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
