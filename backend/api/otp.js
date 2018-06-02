@@ -25,7 +25,7 @@ router.get('/', function(req, res, next) {
   }
 
   /*
-   * return otpStr with string format
+   * send otpStr with string format
    */
   res.render('index', { title: 'IoT TermProject', otp:otpStr});
   res.send(otpStr);

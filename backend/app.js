@@ -27,6 +27,7 @@ app.use('/users', usersRouter);
 
 // API
 app.use('/api/otp', otpRouter);
+app.use('/api/door', require('./api/door'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
