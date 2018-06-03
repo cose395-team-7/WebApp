@@ -2,6 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
+var otpAPI = require('door');
 
 /*
  * isDoorOpen : variable that represents the door state. true - open, false - close
@@ -17,6 +18,10 @@ function doorStateToStr(isDoorOpen){
   else return "close";
 }
 
+/*
+ * GET method
+ * return the current status of door, "open" or "close"
+ */
 router.get('/', function(req, res, next) {
 
   /*
@@ -24,6 +29,13 @@ router.get('/', function(req, res, next) {
    */
   res.render('index', { title: 'IoT TermProject', door:doorStateToStr(isDoorOpen)});
   res.send(doorStateToStr(isDoorOpen));
+});
+
+/*
+ * PUT method
+ *
+ */
+router.put('/', function(req,res){
 });
 
 module.exports = router;

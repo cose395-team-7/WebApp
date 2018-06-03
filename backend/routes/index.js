@@ -4,7 +4,6 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  var otp = req.body.otp;
   res.render('index', { title: 'IoT TermProject'});
 });
 
