@@ -4,7 +4,7 @@ var express = require('express');
 var router = express.Router();
 
 // current OTP string variable
-static var otpStr = "";
+var otpStr = "";
 
 /*
  * Random Number Generator Function in Integer format
@@ -64,3 +64,5 @@ router.get('/', function(req, res, next)
 });
 
 module.exports = router;
+export.getotp=getOTP;
+export.setotp=setOTP;

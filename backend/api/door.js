@@ -25,14 +25,13 @@ function doorStateToStr(isDoorOpen)
 }
 
 function OTPCheck(_otp){
-  if(otpAPI.getOTP() === _otp){
+  if(otpAPI.getotp() === _otp){
     return true;
   }
   else return false;
 }
 
 function ALCheck(){
-
 }
 
 /*
@@ -43,7 +42,7 @@ router.get('/', function(req, res, next)
 {
 
   // send the door state with string format
-  res.render('index', { title: 'IoT TermProject', door:doorStateToStr(isDoorOpen)});
+//  res.render('index', { title: 'IoT TermProject', door:doorStateToStr(isDoorOpen)});
   res.send(doorStateToStr(isDoorOpen));
   if(isDoorOpen) {
     isDoorOpen = false;
@@ -59,15 +58,17 @@ router.put('/', function(req,res)
   var otpInput = req.body.pwd;
   if(OTPCheck(otpInput)){
     isDoorOpen=true;
+    res.send(true);
   }
   else {
     attemptCnt+=1;
     if(attemptCnt >= 5){
-      otpAPI.setOTP("");
+      otpAPI.setotp("");
       attcmptCnt=0;
-      res.send("OTP expired!! Get a new OTP!!");
+      res.send(false);
     }
     console.log("OTP is wrong");
+    res.send(false);
   }
 });
 
