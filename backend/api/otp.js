@@ -16,7 +16,7 @@ function getRandomInt(max) {
 /*
  * getOTP : returns current OTP string
  */
-function getOTP()
+router.getotp = function getOTP()
 {
   return otpStr;
 }
@@ -24,7 +24,7 @@ function getOTP()
 /*
  * setOTP : set OTP string to _otpStr
  */
-function setOTP(_otpStr)
+router.setotp = function setOTP(_otpStr)
 {
   otpStr = _otpStr;
 }
@@ -52,17 +52,13 @@ function OTPGeneration()
 /* GET home page. */
 router.get('/', function(req, res, next)
 {
-  if(otpStr==="") {
-    otpStr = OTPGeneration();
-  }
+  otpStr = OTPGeneration();
 
   /*
    * send otpStr with string format
    */
   res.render('index', { title: 'IoT TermProject', otp:otpStr});
-  res.send(otpStr);
+//  res.send(otpStr);
 });
 
 module.exports = router;
-export.getotp=getOTP;
-export.setotp=setOTP;

@@ -10,6 +10,7 @@ var usersRouter = require('./routes/users');
 var otpRouter = require('./api/otp');
 var doorRouter = require('./api/door');
 var alcRouter = require('./api/alcohol');
+var errorRouter = require('./api/ShowError');
 
 var app = express();
 var server = http.createServer(app);
@@ -31,6 +32,7 @@ app.use('/users', usersRouter);
 app.use('/api/otp', otpRouter);
 app.use('/api/door', doorRouter);
 app.use('/api/alcohol', alcRouter);
+app.use('/api/ShowError', errorRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next)

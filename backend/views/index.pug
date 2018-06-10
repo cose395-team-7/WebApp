@@ -6,8 +6,15 @@ block content
   a(href='../api/otp')
     button(type='button' ) OTP Gen
   if otp
-    p #{otp}
+    p Generated OTP : #{otp}
+  if userOTP
+    p userOTP : #{userOTP}
   a(href='../api/door')
     button(type='button') Door State
   if door
     p #{door}
+  form(action='/api/door' method='post')
+    p
+      input(type='text' name='pwd')
+    p
+      input(type='submit' value='OTP 제출')

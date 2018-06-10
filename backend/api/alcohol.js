@@ -2,22 +2,50 @@
 
 var express = require('express');
 var router = express.Router();
+var url = require('url');
+var querystring = require('querystring');
 
-var alcoholConcentration = 0.0;
+var MIN_THRESHOLD = 80;
+var MAX_THRESHOLD = 150;
+var MIN_INIT = 150;
+var MAX_INIT = -1;
 
-function getAlc(){
-  return alcoholConcentration;
+var maxAlcoholConcentration = MAX_INIT;
+var minAlcoholConcentration = MIN_INIT;
+var t = new Date();
+
+router.getTimeForAlc = function getTimeForAlcohol(){
+  return t;
+}
+
+router.getalcMax = function getAlcMax(){
+  return maxAlcoholConcentration;
+}
+
+router.getalcMin = function getAlcMin(){
+  return minAlcoholConcentration;
+}
+
+router.resetAl = function resetAlcohol(){
+  t = new Date();
+  maxAlcoholConcentration = MAX_INIT;
+  minAlcoholConcentration = MIN_INIT;
 }
 
 function setAlc(_alcoholConcentration){
-  alcoholConcentration = _alcoholConcentration;
+  if(_alcoholConcentration > maxAlcoholConcentration) maxAlcoholConcentration = _alcoholConcentration;
+  if(_alcoholConcentration < minAlcoholConcentration) minAlcoholConcentration = _alcoholConcentration;
 }
 
-router.put('/', function (req,res){
-  alcoholInput=req.body.value;
+router.get('/:value', function (req,res){
+  alcoholInput=req.params.value;
+  alcoholInput *= 1;
   setAlc(alcoholInput);
-  res.send(alcoholConcentration);
+  if(alcoholInput < MIN_THRESHOLD || alcoholInput > MAX_THRESHOLD){
+    t = new Date();
+  }
+  console.log("max : " + maxAlcoholConcentration + ", min : " + minAlcoholConcentration + ", cur : " + alcoholInput);
+  res.sendStatus(200);
 });
 
 module.exports = router;
-export.getalc=getAlc;
