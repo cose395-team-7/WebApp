@@ -9,6 +9,8 @@ var MIN_THRESHOLD = 80;
 var MAX_THRESHOLD = 150;
 var TIME_THRESHOLD = 180;
 
+var networkAddress = "172.30.1";
+
 /*
  * isDoorOpen : variable that represents the door state. true - open, false - close
  */
@@ -19,24 +21,28 @@ var isDoorOpen = false;
  */
 var attemptCnt = 0;
 
+router.getDoorState = function getDoorstate() {
+  return doorStateToStr(isDoorOpen);
+}
+
 /*
  * doorStateToStr : change doorstate(boolean) to string format
  * return : "open" when isDoorOpen is true, "close" when isDoorOpen is false
  */
-function doorStateToStr(isDoorOpen)
-{
+function doorStateToStr(isDoorOpen) {
   if(isDoorOpen)return "open";
   else return "none";
 }
 
-function OTPCheck(_otp){
+function OTPCheck(_otp) {
+  console.log(otpAPI);
   if(otpAPI.getotp() === _otp){
     return true;
   }
   else return false;
 }
 
-function ALCheck(){
+function ALCheck() {
   if(alcAPI.getalcMin() > MIN_THRESHOLD){
     return false;
   }
@@ -46,7 +52,7 @@ function ALCheck(){
   return true;
 }
 
-function TimeCheck(){
+function TimeCheck() {
   var old = alcAPI.getTimeForAlc();
   var now = new Date();
   var sec_gap = (now.getTime() - old.getTime())/1000;
@@ -58,7 +64,7 @@ function TimeCheck(){
   }
 }
 
-function ResetProcess(){
+function ResetProcess() {
   otpAPI.setotp("-1");
   attcmptCnt=0;
   alcAPI.resetAl();
@@ -68,8 +74,7 @@ function ResetProcess(){
  * GET method
  * return the current status of door, "open" or "close"
  */
-router.get('/', function(req, res, next)
-{
+router.get('/', function(req, res, next) {
 
   // send the door state with string format
 //  res.render('index', { title: 'IoT TermProject', door:doorStateToStr(isDoorOpen)});
@@ -87,35 +92,42 @@ router.get('/', function(req, res, next)
 /*
  * POST method : OTP attempt
  */
-router.post('/', function(req,res)
-{
-  var otpInput = req.body.pwd;
-  if(ALCheck()){
-    if(TimeCheck()){
-      if(OTPCheck(otpInput)){
-        console.log("Door Open Set");
-        isDoorOpen = true;
-        res.send("PASS!! Wait Until the door open!");
+router.post('/', function(req,res) {
+  var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+  if(ip.indexOf(networkAddress) > -1){
+    var otpInput = req.body.pwd;
+    if(ALCheck()){
+      if(TimeCheck()){
+        if(OTPCheck(otpInput)){
+          console.log("Door Open Set");
+          isDoorOpen = true;
+          res.send("PASS!! Wait Until the door open!");
+        }
+        else{
+          attemptCnt+=1;
+          if(attemptCnt >= 5){
+            ResetProcess();
+          }
+          console.log("Wrong OTP");
+          res.send("Wrong Password!!! You can't enter the room!!!");
+        }
       }
       else{
-        attemptCnt+=1;
-        if(attemptCnt >= 5){
-          ResetProcess();
-        }
-        console.log("Wrong OTP");
-        res.send("Wrong Password!!! You can't enter the room!!!");
+        console.log("Time Expired");
+        ResetProcess();
+        res.send("Time Expired!!! You can't enter the room!!!");
       }
     }
     else{
-      console.log("Time Expired");
+      console.log("alcohol check Failed");
+      res.send("Drunken!!!! You can't enter the room!!!");
       ResetProcess();
-      res.send("Time Expired!!! You can't enter the room!!!");
     }
   }
   else{
-    console.log("alcohol check Failed");
-    res.send("Drunken!!!! You can't enter the room!!!");
-    ResetProcess();
+    console.log("Authentication Failed");
+    res.send("Authentication Failed!!! You should be in the same network with Server!!!");
+    resetProcess();
   }
 //  res.render('index', { title: 'IoT TermProject', otp:otpAPI.getotp(), userOTP:otpInput});
 //  res.send("user input : " + otpInput + ", answer otp : " + otpAPI.getotp());

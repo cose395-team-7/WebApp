@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  form(action='/api/door' method='post')
+    p
+      input(type='text' name='pwd')
+    p
+      input(type='submit' value='OTP 제출')

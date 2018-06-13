@@ -2,6 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
+//var doorAPI = require('./door.js');
 
 // current OTP string variable
 var otpStr = "";
@@ -16,16 +17,14 @@ function getRandomInt(max) {
 /*
  * getOTP : returns current OTP string
  */
-router.getotp = function getOTP()
-{
+router.getotp = function getOTP() {
   return otpStr;
 }
 
 /*
  * setOTP : set OTP string to _otpStr
  */
-router.setotp = function setOTP(_otpStr)
-{
+router.setotp = function setOTP(_otpStr) {
   otpStr = _otpStr;
 }
 
@@ -33,8 +32,7 @@ router.setotp = function setOTP(_otpStr)
  * OTPGeneration() : function which generates the OTP string
  * return : OTP string
  */
-function OTPGeneration()
-{
+function OTPGeneration() {
   /*
    * random number generation with length 4 which is used as OTP
    * created otp is stored in optStr in string type
@@ -50,14 +48,15 @@ function OTPGeneration()
 }
 
 /* GET home page. */
-router.get('/', function(req, res, next)
-{
+router.get('/', function(req, res, next) {
   otpStr = OTPGeneration();
+
+//  var doorState=doorAPI.getDoorState();
 
   /*
    * send otpStr with string format
    */
-  res.render('index', { title: 'IoT TermProject', otp:otpStr});
+  res.render('index', { title: 'IoT TermProject', otp:otpStr}); //, door:doorState
 //  res.send(otpStr);
 });
 

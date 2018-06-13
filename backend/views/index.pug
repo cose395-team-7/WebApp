@@ -12,9 +12,4 @@ block content
   a(href='../api/door')
     button(type='button') Door State
   if door
-    p #{door}
-  form(action='/api/door' method='post')
-    p
-      input(type='text' name='pwd')
-    p
-      input(type='submit' value='OTP 제출')
+    p door State : #{door}
