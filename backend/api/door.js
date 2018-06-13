@@ -5,11 +5,12 @@ var router = express.Router();
 var otpAPI = require('./otp.js');
 var alcAPI = require('./alcohol.js');
 
-var MIN_THRESHOLD = 80;
+var MIN_THRESHOLD = 50;
 var MAX_THRESHOLD = 150;
 var TIME_THRESHOLD = 180;
 
 var networkAddress = "172.30.1";
+var localAddress = "::1";
 
 /*
  * isDoorOpen : variable that represents the door state. true - open, false - close
@@ -35,21 +36,25 @@ function doorStateToStr(isDoorOpen) {
 }
 
 function OTPCheck(_otp) {
-  console.log(otpAPI);
   if(otpAPI.getotp() === _otp){
     return true;
   }
   else return false;
 }
 
+/*
+ * 안 분 경우 : getAlcMin > MIN_THRESHOLD       ----> return 1;
+ * 수치가 높은 경우 : getAlcMax > MAX_THRESHOLD  ----> return 2;
+ * 통과한 경우 :                                 ----> return 3;
+ */
 function ALCheck() {
   if(alcAPI.getalcMin() > MIN_THRESHOLD){
-    return false;
+    return 1;
   }
   if(alcAPI.getalcMax() > MAX_THRESHOLD){
-    return false;
+    return 2;
   }
-  return true;
+  return 3;
 }
 
 function TimeCheck() {
@@ -65,7 +70,7 @@ function TimeCheck() {
 }
 
 function ResetProcess() {
-  otpAPI.setotp("-1");
+  otpAPI.setotp("");
   attcmptCnt=0;
   alcAPI.resetAl();
 }
@@ -94,9 +99,10 @@ router.get('/', function(req, res, next) {
  */
 router.post('/', function(req,res) {
   var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-  if(ip.indexOf(networkAddress) > -1){
+  if((ip.indexOf(networkAddress) > -1) || (ip.indexOf(localAddress) > -1)){
     var otpInput = req.body.pwd;
-    if(ALCheck()){
+    var alcResult = ALCheck();
+    if(alcResult==3){
       if(TimeCheck()){
         if(OTPCheck(otpInput)){
           console.log("Door Open Set");
@@ -109,7 +115,7 @@ router.post('/', function(req,res) {
             ResetProcess();
           }
           console.log("Wrong OTP");
-          res.send("Wrong Password!!! You can't enter the room!!!");
+          res.send("Wrong Password!!! You can't enter the room!!!" + "tried : " + attemptCnt);
         }
       }
       else{
@@ -118,16 +124,18 @@ router.post('/', function(req,res) {
         res.send("Time Expired!!! You can't enter the room!!!");
       }
     }
-    else{
-      console.log("alcohol check Failed");
+    else if(alcResult==2){
+      console.log("alcohol check Failed : type 2 - high value");
       res.send("Drunken!!!! You can't enter the room!!!");
-      ResetProcess();
+    }
+    else {
+      console.log("alcohol check Failed: type 1 - did not blow");
+      res.send("PLEASE BLOW THE ALCOHOL CHECKER!!!");
     }
   }
   else{
     console.log("Authentication Failed");
     res.send("Authentication Failed!!! You should be in the same network with Server!!!");
-    resetProcess();
   }
 //  res.render('index', { title: 'IoT TermProject', otp:otpAPI.getotp(), userOTP:otpInput});
 //  res.send("user input : " + otpInput + ", answer otp : " + otpAPI.getotp());

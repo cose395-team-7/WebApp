@@ -49,14 +49,17 @@ function OTPGeneration() {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  otpStr = OTPGeneration();
+  var id = req.query.id;
+  if(id==="1") otpStr=OTPGeneration();
+
+  if(!otpStr)otpStr = OTPGeneration();
 
 //  var doorState=doorAPI.getDoorState();
 
-  /*
-   * send otpStr with string format
-   */
-  res.render('index', { title: 'IoT TermProject', otp:otpStr}); //, door:doorState
+  // redirect to admin page
+  if(id==="1") res.redirect('../../admin');
+  else res.redirect('../admin');
+//  res.render('index', { title: 'IoT TermProject', otp:otpStr}); //, door:doorState
 //  res.send(otpStr);
 });
 
