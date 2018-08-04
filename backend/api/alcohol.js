@@ -7,7 +7,7 @@ var querystring = require('querystring');
 
 var MIN_THRESHOLD = 50;
 var MAX_THRESHOLD = 150;
-var MIN_INIT = 70; // no connection : 70, connection : 150
+var MIN_INIT = 80; // no connection : 70, connection : 150
 var MAX_INIT = -1;
 
 var maxAlcoholConcentration = MAX_INIT;

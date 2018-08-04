@@ -34,3 +34,6 @@
      value - type : float
   - res :
      value - type : float
+
+* HOW TO RUN
+ - cmd 켜고 /backend로 이동 -> set DEBUG=backend:* & npm start

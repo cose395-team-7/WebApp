@@ -5,11 +5,11 @@ var router = express.Router();
 var otpAPI = require('./otp.js');
 var alcAPI = require('./alcohol.js');
 
-var MIN_THRESHOLD = 50;
-var MAX_THRESHOLD = 150;
+var MIN_THRESHOLD = 70;
+var MAX_THRESHOLD = 180;
 var TIME_THRESHOLD = 180;
 
-var networkAddress = "172.30.1";
+var networkAddress = "192.168.43";
 var localAddress = "::1";
 
 /*
